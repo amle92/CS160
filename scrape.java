@@ -1,10 +1,17 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.jsoup.nodes.Element;
-import java.sql.*;
+import org.jsoup.select.Elements;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class scrape {
 
@@ -25,30 +32,51 @@ public class scrape {
         String url2 = "https://www.canvas.net/"; // canvas courses
 
 
-
         ArrayList pgcrs = new ArrayList<String>(); //Array which will store each course URLs
         pgcrs.add(url1);
         pgcrs.add(url2);
 
         //The following few lines of code are used to connect to a database so the scraped course content can be stored.
         Class.forName("com.mysql.jdbc.Driver").newInstance();
-        java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/moocs160","root","");
+        java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/moocs160", "root", "");
         //make sure you create a database named scrapedcourse in your local mysql database before running this code
         //default mysql database in your local machine is ID:root with no password
         //you can download scrapecourse database template from your Canvas account->modules->Team Project area
-        for(int a=0; a<pgcrs.size();a++)
-        {
+        for (int a = 0; a < pgcrs.size(); a++) {
             String furl = (String) pgcrs.get(a);
             Document doc = Jsoup.connect(furl).get();
             Elements ele = doc.select("div[class*=views-row]");
             Elements crspg = ele.select("article[class=course-tile]");
             Elements link = crspg.select("div[href]");
 
-            for (int j=0; j<link.size();j++)
-            {
+            //Saves to text file
+            BufferedWriter writer = null;
+            try {
+                //create a temporary file
+                String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+                File logFile = new File(timeLog);
+
+                //outputs path to where it will write to
+                System.out.println(logFile.getCanonicalPath());
+
+                writer = new BufferedWriter(new FileWriter(logFile));
+                writer.write(String.valueOf(ele));
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    // Close the writer regardless of what happens...
+                    writer.close();
+                } catch (Exception e) {
+                }
+            }
+            
+            for (int j = 0; j < link.size(); j++) {
                 //Statement statement = connection.createStatement();
 
-                String crsurl = "https://www.open2study.com/" +link.get(j).attr("href"); //Get the Course Url from href tag and add to www.edx.org to get the full URL to the course
+                String crsurl = "https://www.open2study.com/" + link.get(j).attr("href"); //Get the Course Url from href tag and add to www.edx.org to get the full URL to the course
                 System.out.println(crsurl);
                 String CourseName = crspg.select("h1").get(j).text(); //Get the Course Name from H1 Tag
                 CourseName = CourseName.replace("'", "''");
@@ -59,19 +87,16 @@ public class scrape {
                 SCrsDesrpTemp = SCrsDesrpTemp.replace("'", "''");
                 SCrsDesrpTemp = SCrsDesrpTemp.replace(",", "");
                 String CrsImg;
-
+                System.out.println("im here link loop");
                 /** HTML section to grab image
                  <figure><img typeof="foaf:Image" class="image-style-course-logo-subjects-block"
                  src="https://www.open2study.com/sites/default/files/styles/course_logo_subjects_block/public/Course_TIle_agriculture.jpg?itok=tB9Z_fdZ" width="260"
                  height="140" alt="Agriculture and the World We Live In" title="Agriculture and the World We Live In" /></figure>
                  */
 
-                if(a==0||a==1)
-                {
-                    CrsImg  = crspg.select("img.image-style-course-logo-subjects-block").get(j).text(); //Grabs the course image from the img class
-                }
-                else
-                {
+                if (a == 0 || a == 1) {
+                    CrsImg = crspg.select("img.image-style-course-logo-subjects-block").get(j).text(); //Grabs the course image from the img class
+                } else {
                     CrsImg = "write you own code here"; //To get the course image - FOR URL4
                 }
                 Document crsdoc = Jsoup.connect(crsurl).get();
@@ -81,58 +106,44 @@ public class scrape {
                 String CrsDes = "write your own code"; //Course Description Element
                 CrsDes = CrsDes.replace("'", "''");
                 CrsDes = CrsDes.replace(",", "");
-                if(CrsDes.contains("?"))
-                {
+                if (CrsDes.contains("?")) {
                     CrsDes = CrsDes.replace("?", "");
                 }
                 String Date = crsdoc.select("div[class=startdate]").text();
-                String StrDate = Date.substring(Date.indexOf(":")+1, Date.length()); //Start date after the :
+                String StrDate = Date.substring(Date.indexOf(":") + 1, Date.length()); //Start date after the :
                 String datechk = StrDate.substring(0, StrDate.indexOf(" "));
-                if(!datechk.matches(".*\\d.*"))
-                {
-                    if(StrDate.contains("n/a"))
-                    {
+                if (!datechk.matches(".*\\d.*")) {
+                    if (StrDate.contains("n/a")) {
                         StrDate = "write you own code";
-                    }
-                    else
-                    {
+                    } else {
                         StrDate = "write your own code";
                     }
-                }
-                else
-                {
+                } else {
                     String date = StrDate.substring(0, StrDate.indexOf(" "));
-                    String month = StrDate.substring(StrDate.indexOf(" ")+1, StrDate.indexOf(" ")+4);
-                    String year = StrDate.substring(StrDate.length()-4,StrDate.length());
+                    String month = StrDate.substring(StrDate.indexOf(" ") + 1, StrDate.indexOf(" ") + 4);
+                    String year = StrDate.substring(StrDate.length() - 4, StrDate.length());
                     StrDate = "write your own code";
                 }
                 Element chk = crsdoc.select("div[class=effort last]").first();
                 Element crslenschk = crsdoc.select("div[class*=duration]").first();
                 String crsduration;
-                if (crslenschk==null)
-                {
+                if (crslenschk == null) {
                     crsduration = "0";
-                }
-                else if(StrDate.contains("n/a self-paced"))
-                {
+                } else if (StrDate.contains("n/a self-paced")) {
                     crsduration = "0";
-                }
-                else
-                {
-                    try{
+                } else {
+                    try {
                         String crsdurationtmp = crsdoc.select("div[class*=duration]").text();
-                        int start = crsdurationtmp.indexOf(":")+1;
-                        int end = crsdurationtmp.indexOf((" "),crsdurationtmp.indexOf(":"));
+                        int start = crsdurationtmp.indexOf(":") + 1;
+                        int end = crsdurationtmp.indexOf((" "), crsdurationtmp.indexOf(":"));
                         crsduration = crsdurationtmp.substring(start, end);
-                    }
-                    catch (Exception e)
-                    {
-                        crsduration ="0";
+                    } catch (Exception e) {
+                        crsduration = "0";
                         System.out.println("Exception");
                     }
                 }
                 //The following is used to insert scraped data into your database table. Need to uncomment all database related code to run this.
-                String query = "insert into course_data values(null,'"+CourseName+"','"+SCrsDesrpTemp+"','"+CrsDes+"','"+crsurl+"','"+youtube+"',"+StrDate+","+crsduration+",'"+CrsImg+"','','Edx')";
+                String query = "insert into course_data values(null,'" + CourseName + "','" + SCrsDesrpTemp + "','" + CrsDes + "','" + crsurl + "','" + youtube + "'," + StrDate + "," + crsduration + ",'" + CrsImg + "','','Edx')";
                 System.out.println(query);
                 //statement.executeUpdate(query);// skip writing to database; focus on data printout to a text file instead.
                 //statement.close();
@@ -140,4 +151,31 @@ public class scrape {
         }
         connection.close();
     }
+
+//    public static void print(){
+//        BufferedWriter writer = null;
+//        try {
+//            //create a temporary file
+//            String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+//            File logFile = new File(timeLog);
+//
+//            // This will output the full path where the file will be written to...
+//            System.out.println(logFile.getCanonicalPath());
+//
+//            writer = new BufferedWriter(new FileWriter(logFile,true));
+//
+//            for (Element e : ele) {
+//                writer.write(String.valueOf(e));
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                // Close the writer regardless of what happens...
+//                writer.close();
+//            } catch (Exception e) {
+//            }
+//        }
+//    }
 }
