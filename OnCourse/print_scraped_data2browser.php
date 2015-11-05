@@ -1,6 +1,6 @@
 <?php
 //require_once("connect.php");//provide a file that contains the database connection info
-$conn = mysqli_connect("localhost", "root", "monamie", "moocs160");
+$conn = mysqli_connect("localhost", "root", "password", "moocs160");
 ?>
 <head>
 <title>OnCourse</title>
