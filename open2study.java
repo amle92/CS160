@@ -13,7 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class scrape {
+public class open2study {
 
     /**
      * @param args
@@ -29,12 +29,12 @@ public class scrape {
         // There are many pages that show 15 EDX courses on a webpage as constrained by ?page=some_number.
         //In this sample program, we show the first 6 pages.
         String url1 = "https://www.open2study.com/courses"; // open2study courses
-        String url2 = "https://www.canvas.net/"; // canvas courses
+        //String url2 = "https://www.canvas.net/"; // canvas courses
 
 
-        ArrayList pgcrs = new ArrayList<String>(); //Array which will store each course URLs
+        ArrayList<String> pgcrs = new ArrayList<String>(); //Array which will store each course URLs
         pgcrs.add(url1);
-        pgcrs.add(url2);
+        //pgcrs.add(url2);
 
         //The following few lines of code are used to connect to a database so the scraped course content can be stored.
         Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -46,21 +46,23 @@ public class scrape {
             String furl = (String) pgcrs.get(a);
             Document doc = Jsoup.connect(furl).get();
             Elements ele = doc.select("div[class*=views-row]");
-            Elements crspg = ele.select("article[class=course-tile]");
-            Elements link = crspg.select("div[href]");
+            Elements crspg = ele.select("span.field-content");
+            Elements link = crspg.select("a[href]");
 
-            //Saves to text file
+            /*
+            ///Saves to text file
             BufferedWriter writer = null;
             try {
                 //create a temporary file
                 String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
                 File logFile = new File(timeLog);
+                
 
                 //outputs path to where it will write to
                 System.out.println(logFile.getCanonicalPath());
 
                 writer = new BufferedWriter(new FileWriter(logFile));
-                writer.write(String.valueOf(ele));
+                writer.write(String.valueOf(crspg));
 
 
             } catch (Exception e) {
@@ -72,36 +74,39 @@ public class scrape {
                 } catch (Exception e) {
                 }
             }
+            */
             
             for (int j = 0; j < link.size(); j++) {
                 //Statement statement = connection.createStatement();
 
-                String crsurl = "https://www.open2study.com/" + link.get(j).attr("href"); //Get the Course Url from href tag and add to www.edx.org to get the full URL to the course
-                System.out.println(crsurl);
-                String CourseName = crspg.select("h1").get(j).text(); //Get the Course Name from H1 Tag
+                String crsurl = "https://www.open2study.com" + link.get(j).attr("href"); //Get the Course Url from href tag and add to www.edx.org to get the full URL to the course
+                System.out.println("crsurl: " + crsurl);
+                String CourseName = crspg.select("h2").get(j).text(); //Get the Course Name from H1 Tag
                 CourseName = CourseName.replace("'", "''");
                 CourseName = CourseName.replace(",", "");
-                String SCrsDesrpTemp = crspg.select("div[class=subtitle]").get(j).text();
+                	System.out.println("CourseName: " + CourseName); // DELETE ME
+                String SCrsDesrpTemp = crspg.select("div.adblock_course_body").get(j).text();
                 SCrsDesrpTemp = SCrsDesrpTemp.replace("?", "");
                 //String SCrsDesrp = SCrsDesrpTemp.substring(0, (SCrsDesrpTemp.length()-5)); //To get the course description and remove the extra characters at the end.
                 SCrsDesrpTemp = SCrsDesrpTemp.replace("'", "''");
                 SCrsDesrpTemp = SCrsDesrpTemp.replace(",", "");
+                	System.out.println("SCrsDesrpTemp: " + SCrsDesrpTemp); // DELETE ME
                 String CrsImg;
-                System.out.println("im here link loop");
                 /** HTML section to grab image
                  <figure><img typeof="foaf:Image" class="image-style-course-logo-subjects-block"
                  src="https://www.open2study.com/sites/default/files/styles/course_logo_subjects_block/public/Course_TIle_agriculture.jpg?itok=tB9Z_fdZ" width="260"
                  height="140" alt="Agriculture and the World We Live In" title="Agriculture and the World We Live In" /></figure>
                  */
-
                 if (a == 0 || a == 1) {
-                    CrsImg = crspg.select("img.image-style-course-logo-subjects-block").get(j).text(); //Grabs the course image from the img class
+                    CrsImg = crspg.select("img[].image-style-course-logo-subjects-block").get(j); //Grabs the course image from the img class
                 } else {
-                    CrsImg = "write you own code here"; //To get the course image - FOR URL4
+                    CrsImg = "N/A"; //To get the course image - FOR URL4
                 }
+                	System.out.println("CrsImg: " + CrsImg); // DELETE ME
                 Document crsdoc = Jsoup.connect(crsurl).get();
                 Elements crsheadele = crsdoc.select("section[class=course-header clearfix]");
-                String youtube = "write your own code"; //Youtube link
+                String youtube = crsdoc.select("iframe.media-youtube-player[src]").text(); //Youtube link
+                	System.out.println(youtube); // DELETE ME
                 Elements crsbodyele = crsdoc.select("section[class=course-detail clearfix]");
                 String CrsDes = "write your own code"; //Course Description Element
                 CrsDes = CrsDes.replace("'", "''");
@@ -109,6 +114,7 @@ public class scrape {
                 if (CrsDes.contains("?")) {
                     CrsDes = CrsDes.replace("?", "");
                 }
+                	System.out.println("CrsDes: " + CrsDes); // DELETE ME
                 String Date = crsdoc.select("div[class=startdate]").text();
                 String StrDate = Date.substring(Date.indexOf(":") + 1, Date.length()); //Start date after the :
                 String datechk = StrDate.substring(0, StrDate.indexOf(" "));
