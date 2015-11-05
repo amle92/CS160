@@ -48,9 +48,35 @@ public class canvas {
         for (int a = 0; a < pgcrs.size(); a++) {
             String furl = (String) pgcrs.get(a);
             Document doc = Jsoup.connect(furl).get();
-            Elements ele = doc.select("div[class*=views-row]");
+            Elements ele = doc.select("div[id=home-page]");
             Elements crspg = ele.select("div.col-md-3 col-sm-6");
             Elements link = crspg.select("a[href]");
+            
+            
+            ///Saves to text file
+            BufferedWriter writer = null;
+            try {
+                //create a temporary file
+                String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+                File logFile = new File(timeLog);
+                
+
+                //outputs path to where it will write to
+                System.out.println(logFile.getCanonicalPath());
+
+                writer = new BufferedWriter(new FileWriter(logFile));
+                writer.write(String.valueOf(ele));
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    // Close the writer regardless of what happens...
+                    writer.close();
+                } catch (Exception e) {
+                }
+            }
 
 
             for (int j = 0; j < link.size(); j++) {
