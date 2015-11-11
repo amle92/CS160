@@ -1,3 +1,6 @@
+package testJsoup;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,6 +17,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +33,7 @@ public class open2study {
      * @throws SQLException
      * @throws ParseException 
      */
+	 
     public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, ParseException {
         //Many things are commented out in this sample program. Uncomment to explore more if needed.
         // Need Jsoup jar files to run this sample program. You may also need to rebuild path, etc.
@@ -44,7 +49,8 @@ public class open2study {
 
         //The following few lines of code are used to connect to a database so the scraped course content can be stored.
         Class.forName("com.mysql.jdbc.Driver").newInstance();
-        java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/moocs160", "root", "");
+        Statement stmt = null;
+        java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3307/moocs160", "root", "");
         //make sure you create a database named scrapedcourse in your local mysql database before running this code
         //default mysql database in your local machine is ID:root with no password
         //you can download scrapecourse database template from your Canvas account->modules->Team Project area
@@ -63,14 +69,10 @@ public class open2study {
                 String timeLog = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
                 File logFile = new File(timeLog);
                 
-
                 //outputs path to where it will write to
                 System.out.println(logFile.getCanonicalPath());
-
                 writer = new BufferedWriter(new FileWriter(logFile));
                 writer.write(String.valueOf(crspg));
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
@@ -87,7 +89,34 @@ public class open2study {
 
                 String crsurl = "https://www.open2study.com" + link.get(j).attr("href"); //Get the Course Url from href tag and add to www.edx.org to get the full URL to the course
                 System.out.println("crsurl: " + crsurl);
+                //THE FOLLOWING CODE IS FOR THE TABLE COURSE_DETAILS. COULD NOT FIND ID AND COURSE_ID SO MANUALLY
+                //INPUTTING AS N/A IN THE QUERY
+                //Professor name
+            	Document crsdoc = Jsoup.connect(crsurl).get();
+            	String CrsProf;
+                try {
+                	CrsProf = crsdoc.select("h5").text();
+                	//to delete 'by' in by author_name
+                    CrsProf = CrsProf.replace("by", "");
+                } catch (Exception e) {
+                	CrsProf = "N/A";
+                }
+                System.out.println("Prof Name: " + CrsProf); // DELETE ME
+                //professor's image
+                String CrsImgProf;
+                if (a == 0 || a == 1) {
+                	//Grabs the professor's image
+                    CrsImgProf = crsdoc.select("img.image-style-teacher-small-profile").get(0).absUrl("src");
+                } else {
+                    CrsImgProf = "N/A"; //To get the course image - FOR URL4
+                }
+                	System.out.println("CrsImg: " + CrsImgProf); // DELETE ME
                 
+                
+                //THE FOLLOWING CODE IS FOR THE TABLE COURSE_DATA. MANUALLY INPUTTING FOLLOWING ELEMENTS IN THE QUERY:
+                	//course_fee = free
+                	//language = english
+                	//certificate = yes because every course seems to offer certificate of achievement
                 /** Course Name **/
                 String CourseName;
                 try {
@@ -121,7 +150,6 @@ public class open2study {
                 }
                 	System.out.println("CrsImg: " + CrsImg); // DELETE ME
                 
-                Document crsdoc = Jsoup.connect(crsurl).get();
                 Elements crsheadele = crsdoc.select("section[class=course-header clearfix]");
                 String youtube;
                 
@@ -178,14 +206,67 @@ public class open2study {
                 }
                 System.out.println("crsduration: " + crsduration); // DELETE ME
                 
+                //university's image
+                String CrsImgUni;
+                if (a == 0 || a == 1) {
+                   //Grabs the professor's image
+                    CrsImgUni = crsdoc.select("img.image-style-educator-details-logo").get(0).absUrl("src");
+                  } else {
+                     CrsImgUni = "N/A"; //To get the course image - FOR URL4
+                   }
+                   System.out.println("University: " + CrsImgUni); // DELETE ME 
+                   
+                   
+                   
+                //date scraped/ Day/Month/Year
+                //java.util.Date date= new java.util.Date();
+                //System.out.println(date);
+                 //DateFormat df = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
+                 //String formattedDate = df.format(date);
+                 //System.out.println(formattedDate);
+                 //DateTime dateForSql = DateTime.parse(formattedDate, 
+                   //      DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss"));
+                 //System.out.println(dt);
+                   java.util.Date dt = new java.util.Date();
+
+                   java.text.SimpleDateFormat sdf = 
+                        new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                   String currentTime = sdf.format(dt);
+                   System.out.println(currentTime);
+                
                 //The following is used to insert scraped data into your database table. Need to uncomment all database related code to run this.
-                String query = "insert into course_data values(null,'" + CourseName + "','" + SCrsDesrpTemp + "','" + CrsDes + "','" + crsurl + "','" + youtube + "','" + sqlStrDate + "'," + crsduration + ",'" + CrsImg + "','','Open2Study')";
-                	System.out.println("query: " + query); // DELETE ME
-                System.out.println(query);
+            
+                String category = "null";
+                   String query = "insert into course_data values(null,'" + CourseName + "','"
+                           + SCrsDesrpTemp + "','" + CrsDes + "','" + crsurl + "','" 
+                                   + youtube + "','" + sqlStrDate + "','" + crsduration + "','" 
+                           + CrsImg + "','" + category + "'," + "'Open2Study', '0.00', 'English', 'Yes','" + CrsImgUni + "','" + currentTime + "')";
+                	//System.out.println("query: " + query); // DELETE ME
+                //System.out.println(query);
                 statement.executeUpdate(query);// skip writing to database; focus on data printout to a text file instead.
+                String query2 = "insert into coursedetails values(null,'"+ CrsProf + 
+                		"','" + CrsImgProf + "'," + "null)" ; 
+                
+                //System.out.println(query2);
+                statement.executeUpdate(query2);
                 statement.close();
             }
         }
         connection.close();
+    }
+    
+    public DateTime dateAndTimeToDateTime(java.sql.Date date, java.sql.Time time) {
+        String myDate = date + " " + time;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        java.util.Date utilDate = new java.util.Date();
+        try {
+            utilDate = sdf.parse(myDate);
+        } catch (ParseException pe){
+            pe.printStackTrace();
+        }
+        DateTime dateTime = new DateTime(utilDate);
+
+        return dateTime;
     }
 }
