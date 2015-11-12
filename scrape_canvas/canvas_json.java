@@ -103,17 +103,26 @@ public class canvas_json {
 			//System.out.println(coursedata.id); // AutoIncremented in SQL
 			System.out.println("title: " + crs.getString("title"));
 			System.out.println("short_desc: " + crs.getString("teaser"));
-			// TO_DO System.out.println("long_desc: " + crs.getString("fixME"));
+			// TO_DO System.out.println("long_desc: " + crs.getString("fixME")); 
+				// full course desc
 			System.out.println("course_link: " + crs.getString("url"));
-			// TO_DO System.out.println("video_link: " + crs.getString("fixMe"));
-			// TO_DO System.out.println("start_date: " + crs.getString("fixMe"));
-			// TO_DO System.out.println("course_length: " + crs.getString("fixMe"));
+			// TO_DO System.out.println("video_link: " + crs.getString("fixMe")); 
+				// "N/A"?
+			// TO_DO System.out.println("start_date: " + crs.getString("fixMe")); 
+				// div[class=course-details] h5
+			// TO_DO System.out.println("course_length: " + crs.getString("fixMe")); 
+				// course duration, calculate, or "self-paced"?
 			System.out.println("course_image: " + crs.getString("image"));
-			// TO_DO System.out.println("category: " + crs.getString("fixMe"));
-			// TO_DO System.out.println("site: " + crs.getString("url"));
+			System.out.println("category: " + crs.getString("type")); 
+				// they're all type "Course"... Fix if necessary
+			System.out.println("site: " + crs.getString("url"));
 			// TO_DO System.out.println("course_fee: " + crs.getString("priceWithCurrency"));
+				// substring to drop currency
 			// TO_DO System.out.println("language: " + crs.getString("fixMe"));
-			// TO_DO System.out.println("certificate: " + crs.getString("fixMe")); // SQL boolean
+				// can't assume english. "creative box" is in french...
+			// TO_DO System.out.println("certificate: " + crs.getString("fixMe")); 
+				// (SQL boolean) div[course-details]... 
+				// if find "certification||certificate" (or certify?) set to true
 			System.out.println("university: " + crs.getJSONObject("logo").getString("label"));
 			// TO_DO System.out.println("time_scraped: " + crs.getString("fixMe"));
 		}
