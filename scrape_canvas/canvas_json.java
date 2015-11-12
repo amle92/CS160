@@ -22,10 +22,12 @@ public class canvas_json {
 	private String jsonGETpt1 = "/products.json?page=";
 	private static int currentPageNum;
 	private String jsonGETpt2 = "&query=";
+	private static int jsonRemaining;
 	
 	public static void main(String[] args) {
 		canvas_json canvas = new canvas_json();
 		currentPageNum = 1;
+		jsonRemaining = 1; //overloaded
 		canvas.getCourseInfo();
 	}
 	
@@ -90,7 +92,8 @@ public class canvas_json {
 	}
 	
 	public void parseJSON(JSONObject tempJSON) {
-		int remaining = (int) tempJSON.get("remaining");
+		jsonRemaining = (int) tempJSON.get("remaining");
+		System.out.println(jsonRemaining);
 		JSONArray courses = tempJSON.getJSONArray("products");
 		
 		JSONObject crs = null;
@@ -117,6 +120,34 @@ public class canvas_json {
 	}
 	
 	public void getCourseInfo() {
+		do {
+			URL urlObj = getURL(currentPageNum);
+			HttpURLConnection con = openCon(urlObj); 
+			//System.out.println(con.getRequestMethod()); // Default Request Method = GET
+			
+			int responseCode = getResponseCode(con);
+			System.out.println("\nSending 'GET' request to URL : " + urlObj);
+			System.out.println("Response Code : " + responseCode);
+
+			BufferedReader breader = getHTTPbr(con);
+			StringBuffer responseBuffer = getResponseBuffer(breader);
+			
+			try {
+				breader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			//print result
+			System.out.println(responseBuffer.toString());
+			
+			JSONObject jsonOBJ = new JSONObject(responseBuffer.toString());
+			parseJSON(jsonOBJ);
+			currentPageNum++;
+		} while (jsonRemaining > 0);
+		
+/**
 		URL urlObj = getURL(currentPageNum);
 		HttpURLConnection con = openCon(urlObj); 
 		//System.out.println(con.getRequestMethod()); // Default Request Method = GET
@@ -140,5 +171,6 @@ public class canvas_json {
 		
 		JSONObject jsonOBJ = new JSONObject(responseBuffer.toString());
 		parseJSON(jsonOBJ);
+*/
 	}
 }
