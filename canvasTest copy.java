@@ -67,8 +67,16 @@ public class canvasTest {
                 //for the professor name
                 String profName;
                 try{
-                	profName = doc.select("h3").text();
+                	Element profN = doc.select("div.instructors>img[alt]").first();
+                	profName = profN.attr("alt");
                 	System.out.println("Professor Name: " + profName);
+                	//this if statement deals with if the img don't have the alt because the alt stores the professor's
+                	//name in a more neat manner
+                	if(profName == ""){
+                		profName = doc.select("div.instructors>h3").text();
+                    	System.out.println("Professor Name: " + profName);
+                	}
+                	
                 }
                 catch(Exception e){
                 	profName = "N/A";
@@ -76,10 +84,12 @@ public class canvasTest {
                 //for the professor image
                 String profImg;
                 try{
-                	
+                	Element e = doc.select("div.instructors>img[src]").first();
+                	profImg = e.attr("src");
+                	System.out.println("Professor Image: " + profImg);
                 }
                 catch(Exception e){
-                	
+                	profImg = "N/A";
                 }
 
                 //THE FOLLOWING PIECE OF CODE IS FOR COURSE_DATA SCHEMA
