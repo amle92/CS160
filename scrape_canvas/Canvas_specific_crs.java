@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
-public class canvas {
+public class Canvas_specific_crs {
     /**
      * @param args
      * @throws IOException
@@ -33,7 +33,8 @@ public class canvas {
         // Need Jsoup jar files to run this sample program. You may also need to rebuild path, etc.
         // There are many pages that show 15 EDX courses on a webpage as constrained by ?page=some_number.
         //In this sample program, we show the first 6 pages.
-        String url1 = "https://www.canvas.net/"; // canvas
+        //String url1 = "https://www.canvas.net/"; // canvas
+    	String url1 = "https://www.canvas.net/browse/jeronline/courses/basic-intro-to-technical-writing";
 
         ArrayList<String> pgcrs = new ArrayList<String>(); //Array which will store each course URLs
         pgcrs.add(url1);
@@ -48,7 +49,7 @@ public class canvas {
         for (int a = 0; a < pgcrs.size(); a++) {
             String furl = (String) pgcrs.get(a);
             Document doc = Jsoup.connect(furl).get();
-            Elements ele = doc.select("div[id=home-page]");
+            Elements ele = doc.select("section[id=product-page]");
             Elements crspg = ele.select("div.col-md-3 col-sm-6");
             Elements link = crspg.select("a[href]");
             
