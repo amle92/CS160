@@ -18,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class canvasTest {
 	public ArrayList<String> link;
@@ -102,6 +104,28 @@ public class canvasTest {
                 catch(Exception e){
                 	courseName = "N/A";
                 }
+                //for getting the course's image
+                String courseImg;
+                String finalcourseImg;
+                try{
+                	System.out.println("hello");
+                	Element courseI = doc.select("div.image-container>span[style]").first();
+                	courseImg = courseI.attr("style");
+                	//courseImg = doc.select("div.image-container>img").text();
+                	Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(courseImg);
+                	 while(m.find()) {
+                		   finalcourseImg = (m.group(1));
+                	       System.out.println("course image: " + finalcourseImg);    
+                	     }
+                	//System.out.println("Course image: " + courseImg);
+                	//System.out.println("hello");
+                	
+                }
+                catch(Exception e){
+                	courseImg = "n/a";
+                }
+                
+                
                 
                 //Long course description
                 String courseDesLong;
