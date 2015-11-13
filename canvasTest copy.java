@@ -113,6 +113,16 @@ public class canvasTest {
                 	courseDesLong = "N/A";
                 }
                 
+                //course's fee
+                String courseFee;
+                try{
+                	courseFee = doc.select("div.product-image>div.product-flag.product-flag-free").text();
+                	System.out.println("Fee: " + courseFee);
+                }
+                catch(Exception e){
+                	
+                }
+                
                 //course url
                 String courseLink;
                 courseLink = link.get(j);
