@@ -42,7 +42,7 @@ public class canvas_json {
 		canvas_json canvas = new canvas_json();
 		//currentPageNum = 1;
 		//jsonRemaining = 1; //overloaded
-		//canvas.getCourseInfo();
+		canvas.getCourseInfo();
 	}
 	
 	public URL getURL(int pageNum) {
