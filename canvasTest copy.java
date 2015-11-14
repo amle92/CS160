@@ -33,16 +33,6 @@ public class canvasTest {
      * @throws ParseException
      */
     public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, ParseException {
-        //Many things are commented out in this sample program. Uncomment to explore more if needed.
-        // Need Jsoup jar files to run this sample program. You may also need to rebuild path, etc.
-        // There are many pages that show 15 EDX courses on a webpage as constrained by ?page=some_number.
-        //In this sample program, we show the first 6 pages.
-        String url1 = "https://www.canvas.net"; // canvas
-
-        //ArrayList<String> pgcrs = new ArrayList<String>(); //Array which will store each course URLs
-        //.add(url1);
-        //pgcrs.add(url2);
-
         //The following few lines of code are used to connect to a database so the scraped course content can be stored.
         Class.forName("com.mysql.jdbc.Driver").newInstance();
         java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3307/moocs160", "root", "");
@@ -66,14 +56,19 @@ public class canvasTest {
             String language = "English";
 
 
+            System.out.println(link.size());
             for (int j = 0; j < link.size(); j++) {
                 Statement statement = connection.createStatement();
                 //the url
                 String furl = (String) link.get(j);
                 //the short description of the course
                 String shortDescription = (String)shortcrsDes.get(j);
+                String shrtDes = shortDescription.replace("'", "''");
+                System.out.println(shrtDes);
                 //the university
                 String university = (String)universityList.get(j);
+            	university = university.replace("'", "''");
+
                 //category
                 String category = (String)categoryL.get(j);
                 //course's image
@@ -124,6 +119,9 @@ public class canvasTest {
                 String courseName;
                 try{
                 	courseName = doc.select("h2").get(0).text();
+                	courseName = courseName.replace("'", "''");
+
+                	//courseName.replace("'", " ");
                 	//WORKS: System.out.println("title: " + courseName);	
                 }
                 catch(Exception e){
@@ -155,6 +153,7 @@ public class canvasTest {
                 try{
                 	courseDesLong = doc.select("div.course-details>p").text();
                 	//WORKS: System.out.println("Long Description: " + courseDesLong);
+                	courseDesLong = courseDesLong.replace("'", "''");
                 }
                 catch(Exception e){
                 	courseDesLong = "N/A";
@@ -162,12 +161,16 @@ public class canvasTest {
                 
                 //course's fee
                 String courseFee;
+                int crsFee = 0;
                 try{
                 	courseFee = doc.select("div.product-image>div.product-flag.product-flag-free").text();
+                	if(courseFee.equals("Free")){
+                		crsFee = 0;
+                	}
                 	//WORKS: System.out.println("Fee: " + courseFee);
                 }
                 catch(Exception e){
-                	courseFee = "N/A";
+                	crsFee = -1;
                 }          
                 /** Start Date **/
                 java.sql.Date sqlStrDate;
@@ -207,16 +210,16 @@ public class canvasTest {
                 }
 
                 /** Certificate **/
-                Boolean certificate = false;
+                String certificate = "no";
                 try{
                     String desc = doc.select("div.course-details>p").text();
                     if (desc.contains("certifica")){
-                        certificate = true;
+                        certificate = "yes";
                     }
                     //WORKS: System.out.println("Certificate " + certificate);
                 }
                 catch(Exception e){
-                    certificate = false;
+                    certificate = "no";
                 }
                 
                 //PROGRAM A WAY TO EXTRACT THE LANGUAGE RATHER THAN HARD CODING IT
@@ -246,16 +249,19 @@ public class canvasTest {
                 
                 //insert into the couse_data schema
                 String query = "insert into course_data values(null,'" + courseName + "','"
-                        + shortDescription + "','" + courseDesLong + "','" + courseLink + "','" 
-                                + "'N/A'" + "','" + sqlStrDate + "','" + crsduration + "','" 
-                        + courseImage + "','" + category + "'," + "'Canvas'," + courseFee
-                        +language + "','" +  "'Yes','" + university + "','" + currentTime + "')";
+                        + shrtDes + "','" + courseDesLong + "','" + courseLink + "','" 
+                                + "N/A" + "','" + sqlStrDate + "','" + crsduration + "','" 
+                        + courseImage + "','" + category + "'," + "'Canvas'," + crsFee + ",'" 
+                        + language + "','" +  certificate + "','" + university + "','" + currentTime + "')";
                 //statement.executeUpdate(query);
+                //System.out.println(query);
                 
                 //insert into the coursedetails schema
                 String query2 = "insert into coursedetails values(null,'"+ profName + 
                 		"','" + profImg + "'," + "null)" ; 
-                //statement.executeUpdate(query2);
+                statement.executeUpdate(query2);
+                String youtube = "null";
+                
                 statement.close();            
             }
         
