@@ -61,6 +61,7 @@ public class canvasTest {
             ArrayList<String> shortcrsDes = object.shortcrsDes;
             ArrayList<String> universityList = object.university;
             ArrayList<String> categoryL = object.crsCategory;
+            ArrayList<String> courseImg = object.crsImg;
             String site = "canvas";
 
 
@@ -74,6 +75,8 @@ public class canvasTest {
                 String university = (String)universityList.get(j);
                 //category
                 String category = (String)categoryL.get(j);
+                //course's image
+                String courseImage = (String)courseImg.get(j);
                 
                 Document doc = Jsoup.connect(furl).get();
             	//System.out.println(link.get(j));
@@ -81,9 +84,9 @@ public class canvasTest {
                 //THE FOLLOWING PIECE OF CODE IS FOR COURSEDETAILS SCHEMA
                 //for the professor name
                 String profName;
-                System.out.println("Short course description: " + shortDescription);
-                System.out.println("University: " + university);
-                System.out.println("Category: " + category);
+                //WORKS: System.out.println("Short course description: " + shortDescription);
+                //WORKS: System.out.println("University: " + university);
+                //WORKS: System.out.println("Category: " + category);
                 try{
                 	Element profN = doc.select("div.instructors>img[alt]").first();
                 	profName = profN.attr("alt");
@@ -92,7 +95,7 @@ public class canvasTest {
                 	//name in a more neat manner
                 	if(profName == ""){
                 		profName = doc.select("div.instructors>h3").text();
-                    	System.out.println("Professor Name: " + profName);
+                    	//WORKS: System.out.println("Professor Name: " + profName);
                 	}
                 	
                 }
@@ -105,34 +108,38 @@ public class canvasTest {
                 try{
                 	Element e = doc.select("div.instructors>img[src]").first();
                 	profImg = e.attr("src");
-                	System.out.println("Professor Image: " + profImg);
+                	//WORKS: System.out.println("Professor Image: " + profImg);
                 }
                 catch(Exception e){
                 	profImg = "N/A";
                 }
 
+                //
+                //
+                //
+                //
                 //THE FOLLOWING PIECE OF CODE IS FOR COURSE_DATA SCHEMA
                 //Course Name
                 String courseName;
                 try{
                 	courseName = doc.select("h2").get(0).text();
-                	System.out.println("title: " + courseName);	
+                	//WORKS: System.out.println("title: " + courseName);	
                 }
                 catch(Exception e){
                 	courseName = "N/A";
                 }
+                
                 //for getting the course's image
-                String courseImg;
+                /**String courseImg;
                 String finalcourseImg;
                 try{
-                	System.out.println("hello");
                 	Element courseI = doc.select("div.image-container>span[style]").first();
                 	courseImg = courseI.attr("style");
                 	//courseImg = doc.select("div.image-container>img").text();
                 	Matcher m = Pattern.compile("\\(([^)]+)\\)").matcher(courseImg);
                 	 while(m.find()) {
                 		   finalcourseImg = (m.group(1));
-                	       System.out.println("course image: " + finalcourseImg);    
+                	       //WORKS: System.out.println("course image: " + finalcourseImg);    
                 	     }
                 	//System.out.println("Course image: " + courseImg);
                 	//System.out.println("hello");
@@ -140,13 +147,13 @@ public class canvasTest {
                 }
                 catch(Exception e){
                 	courseImg = "n/a";
-                }
+                }*/
                 
                 //Long course description
                 String courseDesLong;
                 try{
                 	courseDesLong = doc.select("div.course-details>p").text();
-                	System.out.println("Long Description: " + courseDesLong);
+                	//WORKS: System.out.println("Long Description: " + courseDesLong);
                 }
                 catch(Exception e){
                 	courseDesLong = "N/A";
@@ -156,12 +163,11 @@ public class canvasTest {
                 String courseFee;
                 try{
                 	courseFee = doc.select("div.product-image>div.product-flag.product-flag-free").text();
-                	System.out.println("Fee: " + courseFee);
+                	//WORKS: System.out.println("Fee: " + courseFee);
                 }
                 catch(Exception e){
-                	
-                }
-                
+                	courseFee = "N/A";
+                }          
                 /** Start Date **/
                 java.sql.Date sqlStrDate;
                 java.util.Date dStrDate = new java.util.Date();
@@ -188,12 +194,14 @@ public class canvasTest {
                     String realEndDate = tempEndDate.substring(tempEndDate.indexOf("-") + 1);
                     int month = month(realEndDate);
                     String[] ddyy = realEndDate.split(", ");
-                    System.out.println("endDate: " + month + tempEndDate); // DELETE ME
+                	//System.out.println("hello");
+                    //System.out.println("endDate: " + month + tempEndDate); // DELETE ME
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
                     java.util.Date dEndDate = sdf.parse(ddyy[0] + "/" + month + "/" + ddyy[1]);
                     long dateDiff = dEndDate.getTime() - dStrDate.getTime();
                     crsduration = (int) TimeUnit.DAYS.convert(dateDiff, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
+                	e.printStackTrace();
                     crsduration = 0;
                 }
 
@@ -204,7 +212,7 @@ public class canvasTest {
                     if (desc.contains("certifica")){
                         certificate = true;
                     }
-                    System.out.println("Certificate " + certificate);
+                    //WORKS: System.out.println("Certificate " + certificate);
                 }
                 catch(Exception e){
                     certificate = false;
@@ -213,9 +221,31 @@ public class canvasTest {
                 //course url
                 String courseLink;
                 courseLink = link.get(j);
-                System.out.println("URL: " + courseLink);
-
+                //WORKS: System.out.println("URL: " + courseLink);
                 
+                //time scraped
+                java.util.Date dt = new java.util.Date();
+
+                java.text.SimpleDateFormat sdf = 
+                     new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+                String currentTime = sdf.format(dt);
+                
+                //insert into the couse_data schema
+                String query = "insert into course_data values(null,'" + courseName + "','"
+                        + shortDescription + "','" + courseDesLong + "','" + courseLink + "','" 
+                                + "'N/A'" + "','" + sqlStrDate + "','" + crsduration + "','" 
+                        + courseImage + "','" + category + "'," + "'Canvas'," + courseFee
+                        + ", 'English', 'Yes','" + university + "','" + currentTime + "')";
+                //statement.executeUpdate(query);
+                System.out.println(query);
+                
+                //insert into the coursedetails schema
+                String query2 = "insert into coursedetails values(null,'"+ profName + 
+                		"','" + profImg + "'," + "null)" ; 
+                //statement.executeUpdate(query2);
+                System.out.println(query2);
+                statement.close();            
             }
         
         connection.close();
@@ -277,7 +307,7 @@ public class canvasTest {
             case "Sept":
                 monthNum = 9;
                 break;
-            case "Octobor":
+            case "October":
                 monthNum = 10;
                 break;
             case "Oct":
