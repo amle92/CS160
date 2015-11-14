@@ -58,16 +58,32 @@ public class canvasTest {
             canvas_json object = new canvas_json();
             object.getCourseInfo();
             ArrayList<String> link = object.crsLinks;
+            ArrayList<String> shortcrsDes = object.shortcrsDes;
+            ArrayList<String> universityList = object.university;
+            ArrayList<String> categoryL = object.crsCategory;
+            String site = "canvas";
 
 
             for (int j = 0; j < link.size(); j++) {
                 Statement statement = connection.createStatement();
+                //the url
                 String furl = (String) link.get(j);
+                //the short description of the course
+                String shortDescription = (String)shortcrsDes.get(j);
+                //the university
+                String university = (String)universityList.get(j);
+                //category
+                String category = (String)categoryL.get(j);
+                
                 Document doc = Jsoup.connect(furl).get();
             	//System.out.println(link.get(j));
+                
                 //THE FOLLOWING PIECE OF CODE IS FOR COURSEDETAILS SCHEMA
                 //for the professor name
                 String profName;
+                System.out.println("Short course description: " + shortDescription);
+                System.out.println("University: " + university);
+                System.out.println("Category: " + category);
                 try{
                 	Element profN = doc.select("div.instructors>img[alt]").first();
                 	profName = profN.attr("alt");
@@ -83,6 +99,7 @@ public class canvasTest {
                 catch(Exception e){
                 	profName = "N/A";
                 }
+                
                 //for the professor image
                 String profImg;
                 try{
@@ -125,8 +142,6 @@ public class canvasTest {
                 	courseImg = "n/a";
                 }
                 
-                
-                
                 //Long course description
                 String courseDesLong;
                 try{
@@ -145,6 +160,54 @@ public class canvasTest {
                 }
                 catch(Exception e){
                 	
+                }
+                
+                /** Start Date **/
+                java.sql.Date sqlStrDate;
+                java.util.Date dStrDate = new java.util.Date();
+                try {
+                    String tempStrDate = doc.select("h5").get(0).text(); // only get start dd/mm/yyyy
+                    //String lengthStrDate = tempStrDate.substring(7);
+                    //String realStrDate = tempStrDate.substring(7,tempStrDate.length() + lengthStrDate.length());
+                    String realStrDate = tempStrDate.substring(7, tempStrDate.indexOf(" ", tempStrDate.indexOf(" ") + 1));
+                    String toParseDate = tempStrDate.replace(","," ");
+                    int month = month(realStrDate);
+                    String[] ddyy = toParseDate.substring(7).split(" ");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    dStrDate = sdf.parse(ddyy[1] + "/" + month + "/" + ddyy[3]);
+                    sqlStrDate = new Date(dStrDate.getTime());
+                    //String strDate = sqlStrDate.toString().replace("-", "");
+                } catch (Exception e) {
+                    sqlStrDate = new java.sql.Date(0);
+                }
+
+                /** Duration **/
+                int crsduration;
+                try {
+                    String tempEndDate = doc.select("strong").get(1).text();
+                    String realEndDate = tempEndDate.substring(tempEndDate.indexOf("-") + 1);
+                    int month = month(realEndDate);
+                    String[] ddyy = realEndDate.split(", ");
+                    System.out.println("endDate: " + month + tempEndDate); // DELETE ME
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    java.util.Date dEndDate = sdf.parse(ddyy[0] + "/" + month + "/" + ddyy[1]);
+                    long dateDiff = dEndDate.getTime() - dStrDate.getTime();
+                    crsduration = (int) TimeUnit.DAYS.convert(dateDiff, TimeUnit.MILLISECONDS);
+                } catch (Exception e) {
+                    crsduration = 0;
+                }
+
+                /** Certificate **/
+                Boolean certificate = false;
+                try{
+                    String desc = doc.select("div.course-details>p").text();
+                    if (desc.contains("certifica")){
+                        certificate = true;
+                    }
+                    System.out.println("Certificate " + certificate);
+                }
+                catch(Exception e){
+                    certificate = false;
                 }
                 
                 //course url
