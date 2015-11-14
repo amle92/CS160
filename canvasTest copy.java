@@ -63,6 +63,7 @@ public class canvasTest {
             ArrayList<String> categoryL = object.crsCategory;
             ArrayList<String> courseImg = object.crsImg;
             String site = "canvas";
+            String language = "English";
 
 
             for (int j = 0; j < link.size(); j++) {
@@ -201,7 +202,7 @@ public class canvasTest {
                     long dateDiff = dEndDate.getTime() - dStrDate.getTime();
                     crsduration = (int) TimeUnit.DAYS.convert(dateDiff, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
-                	e.printStackTrace();
+                	//e.printStackTrace();
                     crsduration = 0;
                 }
 
@@ -217,6 +218,18 @@ public class canvasTest {
                 catch(Exception e){
                     certificate = false;
                 }
+                
+                //PROGRAM A WAY TO EXTRACT THE LANGUAGE RATHER THAN HARD CODING IT
+                if(courseName.equals("Creative Box")){
+                	language = "French";
+                }
+                else if(courseName.equals("Metadatos para recursos educativos")){
+                	language = "Spanish";
+                }
+                else{
+                	language = "English";
+                }
+                System.out.println(language);
                 
                 //course url
                 String courseLink;
@@ -236,15 +249,13 @@ public class canvasTest {
                         + shortDescription + "','" + courseDesLong + "','" + courseLink + "','" 
                                 + "'N/A'" + "','" + sqlStrDate + "','" + crsduration + "','" 
                         + courseImage + "','" + category + "'," + "'Canvas'," + courseFee
-                        + ", 'English', 'Yes','" + university + "','" + currentTime + "')";
+                        +language + "','" +  "'Yes','" + university + "','" + currentTime + "')";
                 //statement.executeUpdate(query);
-                System.out.println(query);
                 
                 //insert into the coursedetails schema
                 String query2 = "insert into coursedetails values(null,'"+ profName + 
                 		"','" + profImg + "'," + "null)" ; 
                 //statement.executeUpdate(query2);
-                System.out.println(query2);
                 statement.close();            
             }
         
