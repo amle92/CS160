@@ -19,6 +19,12 @@ import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 public class open2study {
+	private static String defaultString = "";
+	private static int defaultInt = 0;
+	//private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    //private static java.util.Date defaultDate = sdf.parse("31/12/2020");
+    //private static java.sql.Date defaultSQLDate = new Date(defaultDate.getTime());
+	// Note: ^ Default Date not implemented
 
     /**
      * @param args
@@ -95,7 +101,7 @@ public class open2study {
 	                CourseName = CourseName.replace("'", "''");
 	                CourseName = CourseName.replace(",", "");
                 } catch (Exception e) {
-                	CourseName = "N/A";
+                	CourseName = defaultString;
                 }
                 	System.out.println("CourseName: " + CourseName); // DELETE ME
                 
@@ -108,7 +114,7 @@ public class open2study {
                     SCrsDesrpTemp = SCrsDesrpTemp.replace("'", "''");
                     SCrsDesrpTemp = SCrsDesrpTemp.replace(",", "");
                 } catch (Exception e) {
-                	SCrsDesrpTemp = "N/A";
+                	SCrsDesrpTemp = defaultString;
                 }
                 	System.out.println("SCrsDesrpTemp: " + SCrsDesrpTemp); // DELETE ME
                 
@@ -117,7 +123,7 @@ public class open2study {
                 if (a == 0 || a == 1) {
                     CrsImg = crspg.select("img[width=260]").get(j).absUrl("src"); //Grabs the course image from the img class
                 } else {
-                    CrsImg = "N/A"; //To get the course image - FOR URL4
+                    CrsImg = defaultString; //To get the course image - FOR URL4
                 }
                 	System.out.println("CrsImg: " + CrsImg); // DELETE ME
                 
@@ -129,7 +135,7 @@ public class open2study {
                 try {
                 	youtube = crsdoc.select("iframe[width=510]").get(0).absUrl("src"); //Youtube link
                 } catch (Exception e) {
-                	youtube = "N/A";
+                	youtube = defaultString;
                 }
                 	System.out.println("youtube: " + youtube); // DELETE ME
                 
@@ -145,7 +151,7 @@ public class open2study {
 	                    CrsDes = CrsDes.replace("?", "");
 	                }
                 } catch (Exception e) {
-                	CrsDes = "N/A";
+                	CrsDes = defaultString;
                 }
                 System.out.println("CrsDes: " + CrsDes); // DELETE ME
                 
@@ -174,7 +180,7 @@ public class open2study {
 	                long dateDiff = dEndDate.getTime() - dStrDate.getTime();
 	                crsduration = (int) TimeUnit.DAYS.convert(dateDiff, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
-                	crsduration = 0;
+                	crsduration = defaultInt;
                 }
                 System.out.println("crsduration: " + crsduration); // DELETE ME
                 
