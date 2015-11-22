@@ -1,4 +1,4 @@
-package testJsoup;
+﻿package testJsoup;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,8 +48,9 @@ public class canvasTest {
 		// The following few lines of code are used to connect to a database so
 		// the scraped course content can be stored.
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
-		java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3307/moocs160", "root",
-				"");
+		java.sql.Connection connection = DriverManager.getConnection(
+                                                    "jdbc:mysql://localhost/youthcyb_cs160s2g4",
+                                                    "youthcyb_160s2g4", "oncourse2015");
 		// make sure you create a database named scrapedcourse in your local
 		// mysql database before running this code
 		// default mysql database in your local machine is ID:root with no
@@ -67,7 +68,7 @@ public class canvasTest {
 		ArrayList<String> link = object.crsLinks;
 		ArrayList<String> shortcrsDes = object.shortcrsDes;
 		ArrayList<String> universityList = object.university;
-		ArrayList<String> categoryL = object.crsCategory;
+		//ArrayList<String> categoryL = object.crsCategory;
 		ArrayList<String> courseImg = object.crsImg;
 		String site = "canvas";
 		String language = "English";
@@ -370,35 +371,43 @@ public class canvasTest {
 			java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 			String currentTime = sdf.format(dt);
-
+                        String youtube = "";
+                        
 			// insert into the couse_data schema
 			// System.out.println("Course Name: " + courseName);
 			String query = "insert into course_data values(null,'" + courseName + "','" + shrtDes + "','"
-					+ courseDesLong + "','" + courseLink + "','" + "" + "','" + sqlStrDate + "','" + crsDuration
+					+ courseDesLong + "','" + courseLink + "','" + youtube + "','" + sqlStrDate + "','" + crsDuration
 					+ "','" + courseImage + "','" + category + "'," + "'Canvas'," + crsFee + ",'" + language + "','"
 					+ certificate + "','" + university + "','" + currentTime + "')";
 			//System.out.println(query);
 					statement.executeUpdate(query);
 					
-					 System.out.println("Course Name: " + courseName);
-					  System.out.println("shrtDes: " + shrtDes);
-					  System.out.println("courseDesLong: " + courseDesLong);
-					  System.out.println("courseLink:" + courseLink);
-					  System.out.println("sqlStrDate: " + sqlStrDate);
-					  System.out.println("crsDuration: " + crsDuration);
-					  System.out.println("courseImage: " + courseImage);
-					  System.out.println("category: " + category);
-					  System.out.println("crsFee: " + crsFee);
-					  System.out.println("language: " + language);
-					  System.out.println("certificate: " + certificate);
-					  System.out.println("university: " + university);
-					  System.out.println("currentTime: " + currentTime);
+                        System.out.println("Course Name: " + courseName);
+                        System.out.println("shrtDes: " + shrtDes);
+                        System.out.println("courseDesLong: " + courseDesLong);
+                        System.out.println("courseLink:" + courseLink);
+                        System.out.println("sqlStrDate: " + sqlStrDate);
+                        System.out.println("crsDuration: " + crsDuration);
+                        System.out.println("courseImage: " + courseImage);
+                        System.out.println("category: " + category);
+                        System.out.println("crsFee: " + crsFee);
+                        System.out.println("language: " + language);
+                        System.out.println("certificate: " + certificate);
+                        System.out.println("university: " + university);
+                        System.out.println("currentTime: " + currentTime);
 					 
-
 			//insert into the coursedetails schema
-			String query2 = "insert into coursedetails values(null,'" + profName + "','" + profImg + "'," + "null)";
-			statement.executeUpdate(query2);
-			String youtube = "null";
+                        // query2 - select primary key of recent insert
+                        String sqlCourseId = "LAST_INSERT_ID()";
+
+                        // query3 - insert into coursedetails
+                        String query3 = "insert into coursedetails values(null,'"
+                            + profName + "','" + profImg + "'," + sqlCourseId + ")" ; 
+                        //System.out.println(query3);
+                        statement.executeUpdate(query3);
+			//String query2 = "insert into coursedetails values(null,'" + profName + "','" + profImg + "'," + "null)";
+			//statement.executeUpdate(query2);
+			
 
 			statement.close();
 		}
