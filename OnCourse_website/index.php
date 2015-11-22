@@ -26,7 +26,7 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
 <nav class="navbar navbar-inverse navbar-fixed-top">
 	  <div class="container-fluid">
 		<div class="navbar-header">
-		  <a class="navbar-brand" href="index.php">OnCourse</a>
+		  <a class="navbar-brand" href="">OnCourse</a>
 		</div>
 		<div>
 		  <ul class="nav navbar-nav">
@@ -48,9 +48,12 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
 	<br />
     <table class="footable footable-sortable table table-bordered" id="coursetable" data-page-size="6">
         <thead>
-            <th data-sort-ignore="true">Image</th>
+            <th data-sort-ignore="true">Course Image</th>
             <th data-sort-ignore="true">Course Name</th>
+			<th data-sort-ignore="true">Professor Name</th>
+			<th data-sort-ignore="true">Professor Image</th>
             <th data-sort-ignore="true">Short Description</th>
+			<th data-sort-ignore="true">Video Link</th>
             <th data-sort-ignore="true">Category</th>
             <th data-sort-ignore="true">Start Date</th>
             <th data-sort-ignore="true">Course Length(Days)</th>
@@ -58,7 +61,9 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
             <!--more here-->
         </thead>
 		<?php
-			$result=$conn->query("SELECT * FROM course_data order by title ASC"); //limit 24");
+			$result=$conn->query("SELECT * FROM course_data, coursedetails 
+			                      WHERE coursedetails.course_id = course_data.id
+								  order by title ASC"); //limit 24");
 			//$usersearch = $_GET['searchstring'];
 			//$matchesfound = 0;
 			
@@ -76,9 +81,13 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
 						//print all the data to the table by rows
 						echo "<tr class='hv' id='course".$row['id']."'>";
 						echo "<td style='display:none;'>".$row['id']."</td>";
-						echo "<td><a href='CoursePage.php?course=".$row['id']."'><image src='" . $row['course_image'] . "' width = 175 height = 175 </image></a></td>"; 
-						echo "<td><a href='CoursePage.php?course=".$row['id']."'>". $row['title'] . "</a></td>";
+						echo "<td><a href='". $row['course_link']."'><image src='" . $row['course_image'] . "' width = 175 height = 175 </image></a></td>"; 						
+						echo "<td><a href='". $row['course_link']."'>". $row['title'] . "</a></td>";
+						echo "<td>".$row['profname']."</td>";
+						echo "<td><image src='" .$row['profimage']. "' width = 175 heigh = 175 </image></a></td>";
 						echo "<td>".$row['short_desc']."</td>";
+						//echo "<td><a href='". $row['video_link']."'>". $row['video_link']. "</a></td>";
+						echo "<td><iframe width=400 height=230 src='". $row['video_link'] ."' frameborder=0 allowfullscreen></iframe></td>";
 						echo "<td>" . $row['category'] . "</td>";
 						echo "<td>"; // start date
 						if($row['start_date']=="0000-00-00")
@@ -97,7 +106,7 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
 																	
 						echo "</tr>";
 						//$matchesfound++;
-					//}
+					//
 				}
 				/*  if ($matchesfound == 0) {
 					header("Location: $errorurl"); 
@@ -108,3 +117,5 @@ $conn = mysqli_connect("localhost", "youthcyb_160s2g4", "oncourse2015", "youthcy
 	</div>
 </br>
 </body>
+
+
