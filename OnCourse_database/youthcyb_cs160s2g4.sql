@@ -62,8 +62,33 @@ CREATE TABLE IF NOT EXISTS `course_data` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
+-- Table structure for table `users`
+--
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` int(5) NOT NULL,
+  `first_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `last_name` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(35) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Table structure for table `mycourses`
+--
+
+CREATE TABLE IF NOT EXISTS `mycourses` (
+  `id` int(5) NOT NULL,
+  `user_id` int(4) NOT NULL,
+  `course_data_id` int(4) NOT NULL
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+--
 -- Indexes for dumped tables
 --
+
 
 --
 -- Indexes for table `coursedetails`
@@ -75,6 +100,18 @@ ALTER TABLE `coursedetails`
 -- Indexes for table `course_data`
 --
 ALTER TABLE `course_data`
+  ADD PRIMARY KEY (`id`);
+  
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`), ADD UNIQUE KEY `email` (`email`);
+  
+--
+-- Indexes for table `mycourses`
+--
+ALTER TABLE `mycourses`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -91,6 +128,19 @@ ALTER TABLE `coursedetails`
 --
 ALTER TABLE `course_data`
   MODIFY `id` int(5) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=49;
+  
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `user_id` int(5) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
+  
+--
+-- AUTO_INCREMENT for table `mycourses`
+--
+ALTER TABLE `mycourses`
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
+  
 --
 -- Constraints for dumped tables
 --

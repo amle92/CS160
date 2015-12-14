@@ -1,0 +1,133 @@
+h1 {
+	font-family: "Arial Black";
+	font-size: 500%;
+}
+
+body {
+	background-color: #A6A6A6;
+}
+
+.coursetable table, th, td {
+	background-color: #F0E6E6;
+	border-collapse: collapse;
+}
+.coursetable th {
+	text-align: center;
+}
+.coursetable td {
+	border: none;
+}
+
+#bg {
+  position: fixed; 
+  top: -50%; 
+  left: -50%; 
+  width: 200%; 
+  height: 200%;
+  z-index: -2;
+}
+#bg img {
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  right: 0; 
+  bottom: 0; 
+  margin: auto; 
+  min-width: 50%;
+  min-height: 50%;
+}
+
+#center_search {
+	text-align: center;
+}
+
+#title {
+	position: absolute;
+    top: 40%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+	color:#EDDFDF;
+}
+
+#cover {
+	opacity: 0.75;
+    filter: alpha(opacity=75);
+	z-index: 10;
+}
+
+#input {
+	border: 0;
+}
+
+#searchbtn {
+	width: 38%;
+	display: block;
+	margin: 0 auto;
+}
+
+#outline {
+	max-width:100%;
+	max-height:100%;
+	position:relative;
+}
+
+#panel {
+	border-radius: 25px;
+	border: 5px solid color:#EDDFDF;
+}
+
+#register_menu {
+	display: none;
+}
+#register_close {
+	display: none;
+}
+#login_menu {
+	display: none;
+}
+
+.ui-widget-content.register_menu-dialog {
+    background: #A6A6A6;
+    border: 3px solid #333333;
+    color: #bfbf30;
+	font-family: Calibri,Arial,Helvetica,sans-serif;
+    font-size: 1em;
+}
+
+/*.ui-dialog.register_menu-dialog {
+    outline: 0 none;
+    padding: 0 !important;
+    position: absolute;
+    top: 0;
+	font-size: 1em;
+}*/
+
+.ui-dialog.register_menu-dialog .ui-dialog-content {
+    border: 0 none;
+    overflow: auto;
+    padding: 0 !important;
+    margin: 0;
+	font-size: 1.5em;
+	text-align: center;
+	color: #000000;
+}
+
+.ui-dialog.register_menu-dialog .ui-widget-header {
+    background: #333333;
+    border: 3px;
+    color: #fff;
+}
+
+.ui-dialog.register_menu-dialog .ui-dialog-titlebar {
+    padding: 0.1em .5em;
+    font-size: 1.75em;
+	font-weight: bold;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+	position: absolute;
+	right: 2.5%;
+	font-size: 0.8em;
+    background: #333333;
+}
